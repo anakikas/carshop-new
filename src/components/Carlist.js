@@ -5,10 +5,6 @@ import { Button, Snackbar } from '@mui/material';
 import Addcar from './AddCar';
 import Editcar from './EditCar';
 
-
-import "ag-grid-community/styles/ag-grid.css";
-import "ag-grid-community/styles/ag-theme-alpine.css";
-
 ModuleRegistry.registerModules([AllCommunityModule]);
 
 
@@ -21,9 +17,12 @@ export default function Carlist() {
     const fetchData = () => {
         fetch ('https://car-rest-service-carshop.2.rahtiapp.fi/cars')
             .then(response => response.json())
-            .then(data => setCars(data._embedded.cars))
-            .catch(err => console.error(err));
-    }
+            .then(data => {
+                console.log(data._embedded.cars);
+                setCars(data._embedded.cars);
+              })
+              .catch(err => console.error(err));
+          };
 
     const deleteCar = (link) => {
         if (window.confirm('Are you sure?')) {
@@ -41,22 +40,34 @@ export default function Carlist() {
       };
 
       const saveCar = (car) => {
+        const newCar = {
+          ...car,
+          year: Number(car.year),
+          price: Number(car.price)
+        };
+      
         fetch('https://car-rest-service-carshop.2.rahtiapp.fi/cars', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json'},
-          body: JSON.stringify(car)
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(newCar)
         })
           .then(() => fetchData())
           .catch(err => console.error(err));
       };
-
+      
       const updateCar = (car, link) => {
+        const updatedCar = {
+          ...car,
+          year: Number(car.year),
+          price: Number(car.price)
+        };
+      
         fetch(link, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify(car)
+          body: JSON.stringify(updatedCar)
         })
           .then(() => fetchData())
           .catch(err => console.error(err));
@@ -67,11 +78,11 @@ export default function Carlist() {
         { field: 'model', headerName: 'Model', flex: 1 },
         { field: 'color', headerName: 'Color', flex: 1 },
         { field: 'fuel', headerName: 'Fuel', flex: 1 },
-        { field: 'year', headerName: 'Year', flex: 1 },
+        { field: 'modelYear', headerName: 'Year', flex: 1 },
         { field: 'price', headerName: 'Price', flex: 1 },
         {
             headerName: 'Edit',
-            flex: 1,
+            width: 120,
             filter: false,
             sortable: false,
             cellRenderer: (params) => (
@@ -80,7 +91,7 @@ export default function Carlist() {
         },
         {
             headerName: 'Delete',
-            flex: 1,
+            width: 120,
             filter: false,
             sortable: false,
             cellRenderer: (params) => (
@@ -107,11 +118,12 @@ export default function Carlist() {
 
          <Addcar addCar={saveCar} />
 
-        <div className="ag-theme-alpine" style={{
-        height: '75vh',
-        width: '100%',
-        marginTop: '10px'
-         }}>
+         <div style={{ 
+            height: '100vh', 
+            width: '100%', 
+            marginTop: '10px' }}
+            >
+
         <AgGridReact
           rowData={cars}
           columnDefs={columns}
@@ -119,6 +131,7 @@ export default function Carlist() {
           pagination={true}
           paginationPageSize={10}
           rowHeight={48}
+          headerHeight={50}
         />
       </div>
 

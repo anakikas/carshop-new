@@ -90,6 +90,7 @@ export default function Addcar(props) {
               margin="dense"
               name="year"
               label="Year"
+              type="number"
               fullWidth
               value={car.year}
               onChange={handleChange}
@@ -98,6 +99,7 @@ export default function Addcar(props) {
               margin="dense"
               name="price"
               label="Price"
+              type="number"
               fullWidth
               value={car.price}
               onChange={handleChange}
